@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crypto & Gold Prices</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+        table {
+            margin: 30px auto;
+            border-collapse: collapse;
+            min-width: 60%;
+            background: #020617;
+        }
+        th, td {
+            border: 1px solid #1f2937;
+            padding: 10px 16px;
+            text-align: center;
+        }
+        th {
+            background: #111827;
+        }
+        tr:nth-child(even) {
+            background: #020617;
+        }
+        .type-badge {
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+        .type-crypto {
+            background: #1d4ed8;
+        }
+        .type-gold {
+            background: #ca8a04;
+        }
+        .updated {
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crypto & Gold Tracker 💰</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Price (USD)</th>
+            <th>Last Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for asset in assets %}
+            <tr>
+                <td>
+                    {% if asset.type == 'crypto' %}
+                        <span class="type-badge type-crypto">Crypto</span>
+                    {% else %}
+                        <span class="type-badge type-gold">Gold</span>
+                    {% endif %}
+                </td>
+                <td>{{ asset.symbol }}</td>
+                <td>{{ asset.name }}</td>
+                <td>${{ asset.price_usd|floatformat:2 }}</td>
+                <td>{{ asset.last_updated }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No data yet. Run the scraper command.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="updated">
+        Data from local DB. Update by running: <code>python manage.py scrape_prices</code>
+    </p>
+</body>
+</html>
