@@ -2,7 +2,6 @@ import re
 import time
 from typing import Dict, List, Optional
 
-from bs4 import BeautifulSoup  # فعلاً لازم نیست، ولی می‌گذاریم اگر بعداً خواستیم توسعه بدیم
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -13,8 +12,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 TABDEAL_URL = "https://tabdeal.org/"
 
-# 👇 این همون مسیریه که گفتی قیمت ریالی BTC توشه:
+# 👇 قیمت ریالی بیت‌کوین
 BTC_IRT_XPATH = '/html/body/div[1]/div/div/div[2]/div/div/div/div/div[1]/section/div/div[2]/div/div[1]/table/tbody/tr[1]/td[2]/div/div[2]/span[2]'
+
+# 👇 قیمت ریالی اتریوم (مسیر جدیدی که دادی)
+ETH_IRT_XPATH = '/html/body/div[1]/div/div/div[2]/div/div/div/div/div[1]/section/div/div[2]/div/div[1]/table/tbody/tr[2]/td[2]/div/div[2]'
 
 
 def _create_driver() -> webdriver.Chrome:
@@ -22,7 +24,7 @@ def _create_driver() -> webdriver.Chrome:
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")  # کمک می‌کند DOM شبیه دسکتاپ شود
+    options.add_argument("--window-size=1920,1080")
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
@@ -45,39 +47,50 @@ def _parse_number(text: str) -> Optional[float]:
         return None
 
 
+def _get_price(driver: webdriver.Chrome, xpath: str, label: str) -> Optional[float]:
+    try:
+        wait = WebDriverWait(driver, 15)
+        elem = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+        raw_text = elem.text.strip()
+        print(f"[TABDEAL] {label} raw text: {raw_text!r}")
+        return _parse_number(raw_text)
+    except Exception as e:
+        print(f"[TABDEAL] error reading {label}: {e}")
+        return None
+
+
 def fetch_tabdeal_prices(symbols: List[str]) -> Dict[str, Dict[str, float]]:
     """
-    گرفتن قیمت تومانی BTC از تبدیل.
+    فقط قیمت تومانی BTC و ETH را از تبدیل می‌گیرد.
 
     خروجی:
     {
-      'BTCIRT': {'price': 11345394301.0, 'change_24h': None},
+      'BTCIRT': {'price': ..., 'change_24h': None},
+      'ETHIRT': {'price': ..., 'change_24h': None},
     }
     """
     driver = _create_driver()
     try:
         driver.get(TABDEAL_URL)
 
-        # منتظر می‌مانیم تا عنصر مربوط به قیمت ریالی BTC ظاهر شود
-        wait = WebDriverWait(driver, 15)
-        elem = wait.until(EC.presence_of_element_located((By.XPATH, BTC_IRT_XPATH)))
-
-        raw_text = elem.text.strip()
-        print(f"[TABDEAL] BTCIRT raw text: {raw_text!r}")
-
-        price_val = _parse_number(raw_text)
-        if price_val is None:
-            print("[TABDEAL] could not parse BTCIRT price.")
-            return {}
-
-        result: Dict[str, Dict[str, float]] = {}
         wanted = {s.upper() for s in symbols}
+        result: Dict[str, Dict[str, float]] = {}
 
         if "BTCIRT" in wanted:
-            result["BTCIRT"] = {
-                "price": price_val,
-                "change_24h": None,  # فعلاً درصد تغییر از تبدیل نداریم
-            }
+            btc_price = _get_price(driver, BTC_IRT_XPATH, "BTCIRT")
+            if btc_price is not None:
+                result["BTCIRT"] = {
+                    "price": btc_price,
+                    "change_24h": None,
+                }
+
+        if "ETHIRT" in wanted:
+            eth_price = _get_price(driver, ETH_IRT_XPATH, "ETHIRT")
+            if eth_price is not None:
+                result["ETHIRT"] = {
+                    "price": eth_price,
+                    "change_24h": None,
+                }
 
         return result
 

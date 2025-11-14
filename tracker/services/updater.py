@@ -5,7 +5,7 @@ from tracker.services.fetchers import timestamp
 
 
 def update_all_prices():
-    # ✅ Nobitex (همچنان BTCIRT و ETHIRT)
+    # ✅ Nobitex
     nobitex_symbols = ["BTCIRT", "ETHIRT"]
     nobitex_data = fetch_nobitex_prices(nobitex_symbols)
 
@@ -26,8 +26,8 @@ def update_all_prices():
             },
         )
 
-    # ✅ Tabdeal – فقط قیمت تومانی BTC
-    tabdeal_symbols = ["BTCIRT"]
+    # ✅ Tabdeal – فقط قیمت تومانی BTC و ETH
+    tabdeal_symbols = ["BTCIRT", "ETHIRT"]
     tabdeal_data = fetch_tabdeal_prices(tabdeal_symbols)
 
     if not tabdeal_data:
@@ -42,7 +42,7 @@ def update_all_prices():
                 "type": "crypto",
                 "price_usd": info["price"],   # تومانی
                 "currency": "IRT",
-                "change_24h": info.get("change_24h"),
+                "change_24h": info.get("change_24h"),  # الان None است
                 "last_updated": timestamp(),
             },
         )
