@@ -5,17 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="20a7a655-2ef5-4c9f-920c-7ec487f6d4d0" name="Changes" comment="start">
-      <change afterPath="$PROJECT_DIR$/tracker/migrations/0002_asset_exchange_alter_asset_symbol_and_more.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tracker/services/binance_scraper.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tracker/services/iranian_scraper.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tracker/services/tabdeal_scraper.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tracker/services/updater.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tracker/management/commands/scrape_prices.py" beforeDir="false" afterPath="$PROJECT_DIR$/tracker/management/commands/scrape_prices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tracker/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/tracker/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracker/services/tabdeal_scraper.py" beforeDir="false" afterPath="$PROJECT_DIR$/tracker/services/tabdeal_scraper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracker/services/updater.py" beforeDir="false" afterPath="$PROJECT_DIR$/tracker/services/updater.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tracker/templates/tracker/asset_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/tracker/templates/tracker/asset_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tracker/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tracker/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +116,8 @@
       <updated>1763045299333</updated>
       <workItem from="1763045300347" duration="1089000" />
       <workItem from="1763046412086" duration="2919000" />
-      <workItem from="1763077360448" duration="7754000" />
+      <workItem from="1763077360448" duration="7940000" />
+      <workItem from="1763129259381" duration="897000" />
     </task>
     <task id="LOCAL‎−۰۰۰۰۱" summary="start">
       <option name="closed" value="true" />
@@ -180,7 +175,14 @@
       <option name="presentableId" value="LOCAL‎−۰۰۰۰۸" />
       <updated>1763077524903</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL‎−۰۰۰۰۹" summary="start">
+      <option name="closed" value="true" />
+      <created>1763085430459</created>
+      <option name="number" value="LOCAL‎−۰۰۰۰۹" />
+      <option name="presentableId" value="LOCAL‎−۰۰۰۰۹" />
+      <updated>1763085430459</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

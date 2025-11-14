@@ -5,14 +5,33 @@ from tracker.services.fetchers import timestamp
 
 
 def update_all_prices():
-    # Nobitex ...
+    # ✅ Nobitex (همچنان BTCIRT و ETHIRT)
     nobitex_symbols = ["BTCIRT", "ETHIRT"]
     nobitex_data = fetch_nobitex_prices(nobitex_symbols)
-    # ... (همون قبلی)
 
-    # ✅ Tabdeal
-    tabdeal_symbols = ["BTCIRT", "ETHIRT"]
+    if not nobitex_data:
+        print("[UPDATER] Nobitex data empty.")
+
+    for symbol, info in nobitex_data.items():
+        Asset.objects.update_or_create(
+            symbol=symbol,
+            exchange="nobitex",
+            defaults={
+                "name": symbol,
+                "type": "crypto",
+                "price_usd": info["price"],
+                "currency": "IRT",
+                "change_24h": info.get("change_24h"),
+                "last_updated": timestamp(),
+            },
+        )
+
+    # ✅ Tabdeal – فقط قیمت تومانی BTC
+    tabdeal_symbols = ["BTCIRT"]
     tabdeal_data = fetch_tabdeal_prices(tabdeal_symbols)
+
+    if not tabdeal_data:
+        print("[UPDATER] Tabdeal data empty.")
 
     for symbol, info in tabdeal_data.items():
         Asset.objects.update_or_create(
@@ -21,9 +40,9 @@ def update_all_prices():
             defaults={
                 "name": symbol,
                 "type": "crypto",
+                "price_usd": info["price"],   # تومانی
                 "currency": "IRT",
-                "price_usd": info["price"],
-                "change_24h": info["change_24h"],
+                "change_24h": info.get("change_24h"),
                 "last_updated": timestamp(),
             },
         )

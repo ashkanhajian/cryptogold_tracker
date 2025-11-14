@@ -104,12 +104,12 @@
 
 <!-- Tabdeal -->
 <div>
-    <div class="exchange-title">تبدیل (قیمت دلاری و تومانی)</div>
+    <div class="exchange-title">تبدیل (قیمت تومانی)</div>
     <table>
         <thead>
         <tr>
             <th>نماد</th>
-            <th>قیمت</th>
+            <th>قیمت (تومان)</th>
             <th>تغییر ۲۴ ساعته</th>
             <th>آخرین بروزرسانی</th>
         </tr>
@@ -118,13 +118,7 @@
         {% for asset in tabdeal_assets %}
             <tr>
                 <td>{{ asset.symbol }}</td>
-                <td>
-                    {% if asset.currency == "IRT" %}
-                        {{ asset.price_usd|floatformat:0 }} تومان
-                    {% else %}
-                        {{ asset.price_usd|floatformat:2 }} {{ asset.currency }}
-                    {% endif %}
-                </td>
+                <td>{{ asset.price_usd|floatformat:0 }} تومان</td>
                 <td>
                     {% if asset.change_24h is not None %}
                         {% if asset.change_24h >= 0 %}
