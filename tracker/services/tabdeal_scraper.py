@@ -12,10 +12,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 TABDEAL_URL = "https://tabdeal.org/"
 
-# 👇 قیمت ریالی بیت‌کوین
+
 BTC_IRT_XPATH = '/html/body/div[1]/div/div/div[2]/div/div/div/div/div[1]/section/div/div[2]/div/div[1]/table/tbody/tr[1]/td[2]/div/div[2]/span[2]'
 
-# 👇 قیمت ریالی اتریوم (مسیر جدیدی که دادی)
+
 ETH_IRT_XPATH = '/html/body/div[1]/div/div/div[2]/div/div/div/div/div[1]/section/div/div[2]/div/div[1]/table/tbody/tr[2]/td[2]/div/div[2]'
 
 
@@ -32,9 +32,7 @@ def _create_driver() -> webdriver.Chrome:
 
 
 def _parse_number(text: str) -> Optional[float]:
-    """
-    متن مثل '11,345,394,301' یا '11,345,394,301 تومان' را به float تبدیل می‌کند.
-    """
+
     if not text:
         return None
     m = re.search(r"[0-9]{1,3}(?:,[0-9]{3})+", text)
@@ -60,15 +58,7 @@ def _get_price(driver: webdriver.Chrome, xpath: str, label: str) -> Optional[flo
 
 
 def fetch_tabdeal_prices(symbols: List[str]) -> Dict[str, Dict[str, float]]:
-    """
-    فقط قیمت تومانی BTC و ETH را از تبدیل می‌گیرد.
 
-    خروجی:
-    {
-      'BTCIRT': {'price': ..., 'change_24h': None},
-      'ETHIRT': {'price': ..., 'change_24h': None},
-    }
-    """
     driver = _create_driver()
     try:
         driver.get(TABDEAL_URL)

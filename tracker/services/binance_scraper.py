@@ -6,10 +6,7 @@ BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price"
 
 
 def fetch_binance_prices(pairs: List[str]) -> Dict[str, float]:
-    """
-    pairs مثل ['BTCUSDT', 'ETHUSDT', 'SOLUSDT']
-    خروجی: {'BTCUSDT': 68000.0, 'ETHUSDT': 3500.0, ...}
-    """
+
     try:
         resp = requests.get(BINANCE_API_URL, timeout=15)
         resp.raise_for_status()

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>نمودار قیمت {{ symbol }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            direction: rtl;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            margin-top: 30px;
+            background: #020617;
+            padding: 16px;
+            border-radius: 12px;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        canvas {
+            max-width: 100%;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+    </style>
+
+    <!-- Chart.js از CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h1>نمودار قیمت {{ symbol }}</h1>
+
+<div class="wrapper">
+    <p style="text-align: center;">
+        <a href="{% url 'asset_list' %}">⬅ بازگشت به صفحه اصلی</a>
+    </p>
+
+    <p class="subtitle">
+        قیمت‌ها بر حسب <strong>تومان (IRT)</strong> از صرافی‌های نوبیتکس و تبدیل
+    </p>
+
+    {% if labels %}
+        <canvas id="priceChart"></canvas>
+    {% else %}
+        <p style="text-align: center; margin-top: 20px;">
+            هنوز هیچ داده‌ای برای این نماد ثبت نشده است.
+        </p>
+    {% endif %}
+</div>
+
+{% if labels %}
+<script>
+    const labels = {{ labels|safe }};
+    const nobitexDataRaw = {{ nobitex_prices|safe }};
+    const tabdealDataRaw = {{ tabdeal_prices|safe }};
+
+    const nobitexData = nobitexDataRaw.map(v => v === null ? null : v);
+    const tabdealData = tabdealDataRaw.map(v => v === null ? null : v);
+
+    const ctx = document.getElementById('priceChart').getContext('2d');
+
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'نوبیتکس (IRT)',
+                    data: nobitexData,
+                    tension: 0.3,
+                },
+                {
+                    label: 'تبدیل (IRT)',
+                    data: tabdealData,
+                    tension: 0.3,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            try {
+                                return value.toLocaleString('fa-IR');
+                            } catch (e) {
+                                return value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+
+</body>
+</html>

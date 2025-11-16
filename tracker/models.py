@@ -26,3 +26,16 @@ class Asset(models.Model):
 
     def __str__(self):
         return f"{self.exchange} - {self.name} ({self.symbol}) {self.price_usd} {self.currency}"
+
+class PriceHistory(models.Model):
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name="history")
+    exchange = models.CharField(max_length=50)
+    price = models.FloatField()
+    change_24h = models.FloatField(null=True, blank=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        return f"{self.asset.symbol} @ {self.exchange} = {self.price} at {self.timestamp}"

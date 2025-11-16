@@ -35,9 +35,7 @@ def _parse_number(text: str) -> Optional[float]:
 
 
 def _parse_change_percent(row_text: str) -> Optional[float]:
-    """
-    از رشته‌ای مثل: '... 11,328,195,596 -3%' یا '... 367,891,214 -5.7%' عدد درصد را در می‌آورد.
-    """
+
     m = re.search(r"([-+]?\d+(?:\.\d+)?)\s*%", row_text)
     if not m:
         return None
@@ -48,13 +46,7 @@ def _parse_change_percent(row_text: str) -> Optional[float]:
 
 
 def fetch_nobitex_prices(symbols: List[str]) -> Dict[str, Dict[str, float]]:
-    """
-    خروجی:
-    {
-      'BTCIRT': {'price': 11328195596.0, 'change_24h': -3.0},
-      'ETHIRT': {'price': 367891214.0, 'change_24h': -5.7},
-    }
-    """
+
     driver = _create_driver()
     try:
         driver.get(NOBITEX_URL)
@@ -81,7 +73,7 @@ def fetch_nobitex_prices(symbols: List[str]) -> Dict[str, Dict[str, float]]:
                 if any(kw in row_text for kw in keywords):
                     print(f"[NOBITEX] {symbol} row text: {row_text!r}")
 
-                    # همه‌ی عددها (برای قیمت از اولین استفاده می‌کنیم)
+
                     numbers = re.findall(r"[0-9]{1,3}(?:,[0-9]{3})*(?:\.\d+)?", row_text)
                     if not numbers:
                         print(f"[NOBITEX] no numeric pattern found in row for {symbol}.")

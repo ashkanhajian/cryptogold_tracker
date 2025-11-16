@@ -50,6 +50,13 @@
         .change-neg {
             color: #f97373;
         }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
         .updated {
             font-size: 12px;
             text-align: center;
@@ -78,8 +85,15 @@
             <tbody>
             {% for asset in nobitex_assets %}
                 <tr>
-                    <td>{{ asset.symbol }}</td>
+                    <td>
+                        {% if asset.symbol %}
+                            <a href="{% url 'asset_history' asset.symbol %}">{{ asset.symbol }}</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                     <td>{{ asset.price_usd|floatformat:0 }} تومان</td>
+
                     <td>
                         {% if asset.change_24h is not None %}
                             {% if asset.change_24h >= 0 %}
@@ -91,12 +105,11 @@
                             -
                         {% endif %}
                     </td>
+
                     <td>{{ asset.last_updated }}</td>
                 </tr>
             {% empty %}
-                <tr>
-                    <td colspan="4">داده‌ای از نوبیتکس موجود نیست.</td>
-                </tr>
+                <tr><td colspan="4">داده‌ای از نوبیتکس موجود نیست.</td></tr>
             {% endfor %}
             </tbody>
         </table>
@@ -117,8 +130,16 @@
             <tbody>
             {% for asset in tabdeal_assets %}
                 <tr>
-                    <td>{{ asset.symbol }}</td>
+                    <td>
+                        {% if asset.symbol %}
+                            <a href="{% url 'asset_history' asset.symbol %}">{{ asset.symbol }}</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
                     <td>{{ asset.price_usd|floatformat:0 }} تومان</td>
+
                     <td>
                         {% if asset.change_24h is not None %}
                             {% if asset.change_24h >= 0 %}
@@ -130,81 +151,95 @@
                             -
                         {% endif %}
                     </td>
+
                     <td>{{ asset.last_updated }}</td>
                 </tr>
             {% empty %}
-                <tr>
-                    <td colspan="4">داده‌ای از تبدیل موجود نیست.</td>
-                </tr>
+                <tr><td colspan="4">داده‌ای از تبدیل موجود نیست.</td></tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
 
 </div>
-    <div style="width: 100%; margin-top: 32px;">
-        <div class="exchange-title">مقایسه قیمت بین صرافی‌ها</div>
-        <table style="margin: 0 auto; margin-top: 8px;">
-            <thead>
+
+
+<!-- Comparison Table -->
+<div style="width: 100%; margin-top: 32px;">
+    <div class="exchange-title">مقایسه قیمت بین صرافی‌ها</div>
+
+    <table style="margin: 0 auto; margin-top: 8px;">
+        <thead>
+        <tr>
+            <th>نماد</th>
+            <th>نوبیتکس (تومان)</th>
+            <th>تبدیل (تومان)</th>
+            <th>ارزون‌تر</th>
+            <th>اختلاف تقریبی</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for item in comparisons %}
             <tr>
-                <th>نماد</th>
-                <th>قیمت در نوبیتکس (تومان)</th>
-                <th>قیمت در تبدیل (تومان)</th>
-                <th>ارزون‌تر</th>
-                <th>اختلاف تقریبی</th>
+                <td>
+                    {% if item.symbol %}
+                        <a href="{% url 'asset_history' item.symbol %}">{{ item.symbol }}</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.nobitex_price %}
+                        {{ item.nobitex_price|floatformat:0 }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.tabdeal_price %}
+                        {{ item.tabdeal_price|floatformat:0 }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.cheaper == "nobitex" %}
+                        <span class="change-pos">نوبیتکس</span>
+                    {% elif item.cheaper == "tabdeal" %}
+                        <span class="change-neg">تبدیل</span>
+                    {% elif item.cheaper == "equal" %}
+                        برابر
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.diff_abs %}
+                        {{ item.diff_abs|floatformat:0 }} تومان
+                        {% if item.diff_pct %}
+                            ({{ item.diff_pct|floatformat:2 }}%)
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            {% for item in comparisons %}
-                <tr>
-                    <td>{{ item.symbol }}</td>
-                    <td>
-                        {% if item.nobitex_price %}
-                            {{ item.nobitex_price|floatformat:0 }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if item.tabdeal_price %}
-                            {{ item.tabdeal_price|floatformat:0 }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if item.cheaper == "nobitex" %}
-                            <span class="change-pos">نوبیتکس</span>
-                        {% elif item.cheaper == "tabdeal" %}
-                            <span class="change-neg">تبدیل</span>
-                        {% elif item.cheaper == "equal" %}
-                            هردو برابر
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if item.diff_abs %}
-                            {{ item.diff_abs|floatformat:0 }} تومان
-                            {% if item.diff_pct %}
-                                (حدود {{ item.diff_pct|floatformat:2 }}%)
-                            {% endif %}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5">هنوز داده‌ای برای مقایسه وجود ندارد.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        {% empty %}
+            <tr><td colspan="5">هیچ داده‌ای برای مقایسه وجود ندارد.</td></tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
 
 <p class="updated">
-    برای بروزرسانی قیمت‌ها کافی است صفحه باز بماند؛ سیستم هر ~۳۰ ثانیه خودش دیتا را تازه می‌کند.
+    صفحه هر ۳۰ ثانیه یکبار خودکار بروزرسانی می‌شود.
 </p>
 
 <script>
@@ -212,5 +247,6 @@
         window.location.reload();
     }, 30000);
 </script>
+
 </body>
 </html>

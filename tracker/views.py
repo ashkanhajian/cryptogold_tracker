@@ -1,13 +1,11 @@
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
+from .models import Asset, PriceHistory
 from django.utils import timezone
 from datetime import timedelta
-
-from .models import Asset
 from .services.updater import update_all_prices
-
-
 def asset_list(request):
-    # آپدیت خودکار اگر دیتا قدیمی باشد
+
     last_asset = Asset.objects.order_by('-last_updated').first()
     now = timezone.now()
 
@@ -17,7 +15,7 @@ def asset_list(request):
     nobitex_assets = list(Asset.objects.filter(exchange='nobitex').order_by('symbol'))
     tabdeal_assets = list(Asset.objects.filter(exchange='tabdeal').order_by('symbol'))
 
-    # ✅ ساختن دیتای مقایسه‌ای
+
     symbols = sorted(
         set(a.symbol for a in nobitex_assets) | set(a.symbol for a in tabdeal_assets)
     )
@@ -66,3 +64,43 @@ def asset_list(request):
         'comparisons': comparisons,
     }
     return render(request, 'tracker/asset_list.html', context)
+def asset_history(request, symbol):
+    symbol = symbol.upper()
+
+    last_asset = Asset.objects.order_by('-last_updated').first()
+    now = timezone.now()
+    if (last_asset is None) or (now - last_asset.last_updated > timedelta(seconds=30)):
+        update_all_prices()
+
+    assets_qs = Asset.objects.filter(symbol=symbol)
+    if not assets_qs.exists():
+        raise Http404("هیچ دارایی‌ای با این نماد پیدا نشد.")
+
+    asset = assets_qs.first()
+
+
+    history_qs = PriceHistory.objects.filter(asset__symbol=symbol).order_by("timestamp")
+
+    labels = [h.timestamp.strftime("%H:%M:%S") for h in history_qs]
+    nobitex_prices = []
+    tabdeal_prices = []
+
+    for h in history_qs:
+        if h.exchange == "nobitex":
+            nobitex_prices.append(h.price)
+            tabdeal_prices.append(None)
+        elif h.exchange == "tabdeal":
+            nobitex_prices.append(None)
+            tabdeal_prices.append(h.price)
+        else:
+            nobitex_prices.append(None)
+            tabdeal_prices.append(None)
+
+    context = {
+        "asset": asset,
+        "symbol": symbol,
+        "labels": labels,
+        "nobitex_prices": nobitex_prices,
+        "tabdeal_prices": tabdeal_prices,
+    }
+    return render(request, "tracker/asset_history.html", context)
